@@ -22,8 +22,6 @@ class OpenVPNClient extends EventEmitter
 		Promise.try =>
 			tmp.fileAsync()
 			.spread (tmpPath, fd, cleanup) =>
-				console.log('auth', @auth)
-				console.log('writing', "#{@auth.user}\n#{@auth.pass}")
 				@vpnOpts = @vpnOpts.concat( [ '--auth-user-pass', tmpPath ] )
 				fs.writeFileAsync(tmpPath, "#{@auth.user}\n#{@auth.pass}")
 				.return(tmpPath)
@@ -33,16 +31,13 @@ class OpenVPNClient extends EventEmitter
 	connect: (cb) ->
 		Promise.using @_writeAuthFile(), =>
 			new Promise (resolve, reject) =>
-				console.log('vpn opts', @vpnOpts)
 				contents = fs.readFileSync(@vpnOpts[@vpnOpts.length - 1], 'utf-8')
-				console.log('authfile', contents)
 				@proc = spawn('openvpn', @vpnOpts)
 
 				# Prefix and log all OpenVPN output
 				@proc.stdout.on 'data', (data) =>
 					@emit('data', data)
 					data = data.toString()
-					console.log('vpn', data)
 					m = data.match(///
 						PUSH:\ Received\ control\ message:\ '
 							PUSH_REPLY,

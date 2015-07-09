@@ -24,10 +24,10 @@ class OpenVPNClient extends EventEmitter
 			.spread (tmpPath, fd, cleanup) =>
 				console.log('auth', @auth)
 				console.log('writing', "#{@auth.user}\n#{@auth.pass}")
-				fs.writeFileAsync(tmpPath, "#{@auth.user}\n#{@auth.pass}")
 				@vpnOpts = @vpnOpts.concat( [ '--auth-user-pass', tmpPath ] )
-				return Promise.resolve(tmpPath).disposer ->
-					console.log('cleaning up file')
+				fs.writeFileAsync(tmpPath, "#{@auth.user}\n#{@auth.pass}")
+				.return(tmpPath)
+				.disposer ->
 					cleanup()
 
 	connect: (cb) ->

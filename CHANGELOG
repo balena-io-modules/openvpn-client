@@ -1,0 +1,4 @@
+v0.0.2
+
+* Remove unnecessary logs.
+* Wait for auth file write promise to be fulfilled.
